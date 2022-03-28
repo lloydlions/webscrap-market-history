@@ -6,56 +6,44 @@ import ExcelJS from "exceljs";
 (async () => {
   const coins = [
     "BTC-USD", //bitcoin
+    "ETH-USD", //ethereum
   ];
-
-  let instance = 0;
 
   let d = new Date();
   const path = d.toLocaleDateString() + ".xslx";
+  const filename = "LRL" + path.split("/");
 
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "LRL";
   workbook.lastModifiedBy = "LRL-bot";
   workbook.modified = new Date();
 
-  //loop through all coins
   for (let coin of coins) {
     const datas = await puppeteerMagic(coin);
-    instance++;
-
+    console.log(coin, " : Exporting data to file IN PROGRESS.");
     const worksheet = workbook.addWorksheet(coin);
+    worksheet.columns = [
+      { header: "Date", key: "date" },
+      { header: "Open", key: "open" },
+      { header: "High", key: "high" },
+      { header: "Low", key: "low" },
+      { header: "Close", key: "close" },
+      { header: "AdjClose", key: "adjClose" },
+      { header: "Volume", key: "volume" },
+    ];
 
-    worksheet.getCell("A" + instance.toString()).value = "Date";
-    worksheet.getCell("B" + instance.toString()).value = "Open";
-    worksheet.getCell("C" + instance.toString()).value = "High";
-    worksheet.getCell("D" + instance.toString()).value = "Low";
-    worksheet.getCell("E" + instance.toString()).value = "Close";
-    worksheet.getCell("F" + instance.toString()).value = "Adj Close";
-    worksheet.getCell("G" + instance.toString()).value = "Volume";
-
-    //loop each response
     for (let i = 0; i <= 90; i++) {
-      //   //Date
-      //   //Open
-      //   //High
-      //   //Low
-      //   //Close
-      //   //Adj Close*
-      //   //Volume
       const data = datas[i].split("\t");
-      const counter = Number(instance) + Number(i);
-
-      worksheet.getCell("A" + counter.toString()).value = "Date";
-      worksheet.getCell("B" + counter.toString()).value = "Open";
-      worksheet.getCell("C" + counter.toString()).value = "High";
-      worksheet.getCell("D" + counter.toString()).value = "Low";
-      worksheet.getCell("E" + counter.toString()).value = "Close";
-      worksheet.getCell("F" + counter.toString()).value = "Adj Close";
-      worksheet.getCell("G" + counter.toString()).value = "Volume";
-
-      //@TODO: write to file
+      const rowValues = [];
+      for (let y = 0; y <= data.length; y++) {
+        rowValues[y] = data[y];
+      }
+      worksheet.addRow(rowValues);
+      console.log(`${coin} : Exported data ${i}`);
     }
+    console.log(coin, " : Exporting data to file COMPLETED.");
   }
+  await workbook.xlsx.writeFile(filename);
 })();
 
 function return90DaysDate() {
@@ -66,7 +54,12 @@ function return90DaysDate() {
   return date90Days.toString();
 }
 
+/*
+  Response:
+  Date, Open, High, Low, Close, Adj Close*, Volume
+*/
 async function puppeteerMagic(target: string): Promise<String[]> {
+  console.log("Processing historical data for ", target);
   const browser = await puppeteer.launch({
     // headless: false,
     defaultViewport: {
@@ -86,6 +79,7 @@ async function puppeteerMagic(target: string): Promise<String[]> {
       return (td as HTMLElement).innerText;
     })
   );
+  // console.log(datas);
   await browser.close();
   return datas;
 }

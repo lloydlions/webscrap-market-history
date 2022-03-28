@@ -1,3 +1,5 @@
 yarn.lock
 image.png
 node_modules
+*.xslx
+.DS_Store
