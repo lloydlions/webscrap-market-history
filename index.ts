@@ -6,7 +6,7 @@ import ExcelJS from "exceljs";
 (async () => {
   const coins = [
     "BTC-USD", //bitcoin
-    "ETH-USD", //ethereum
+    // "ETH-USD", //ethereum
   ];
 
   let d = new Date();
@@ -32,15 +32,47 @@ import ExcelJS from "exceljs";
       { header: "Volume", key: "volume" },
     ];
 
+    const close90Days = [];
+    const open90Days = [];
+    const percetageOfChange = [];
+
     for (let i = 0; i <= 90; i++) {
       const data = datas[i].split("\t");
       const rowValues = [];
       for (let y = 0; y <= data.length; y++) {
         rowValues[y] = data[y];
+        if (y == 1) {
+          open90Days.push(parseFloat(data[y].replace(/,/g, "")));
+        }
+        if (y == 4) {
+          close90Days.push(parseFloat(data[y].replace(/,/g, "")));
+        }
       }
       worksheet.addRow(rowValues);
       console.log(`${coin} : Exported data ${i}`);
     }
+
+    //compute mean/average
+    const getValueOfMean = (array: number[]) =>
+      array.reduce((a, b) => a + b) / array.length;
+
+    //stdev
+    let getValueOfStdev = (data: number[]) => {
+      let m = getValueOfMean(data);
+      return Math.sqrt(
+        data.reduce(function (sq, n) {
+          return sq + Math.pow(n - m, 2);
+        }, 0) /
+          (data.length - 1)
+      );
+    };
+
+    //compute percentage of change
+    for (let i = 0; i < close90Days.length; i++) {
+      //close divided by open
+      percetageOfChange.push(Number(close90Days[i] / open90Days[i]));
+    }
+
     console.log(coin, " : Exporting data to file COMPLETED.");
   }
   await workbook.xlsx.writeFile(filename);
