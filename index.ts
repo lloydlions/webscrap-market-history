@@ -5,8 +5,33 @@ import ExcelJS from "exceljs";
 //npx ts-node index.ts
 (async () => {
   const coins = [
-    "BTC-USD", //bitcoin
-    "ETH-USD", //ethereum
+    "BTC-USD", //BITCOIN
+    "ETH-USD", //ETHERIUM
+    "BNB-USD", //BINANCE COIN
+    "XRP-USD", //XRP
+    "ADA-USD", //CARDANO
+    "SOL-USD", //SOLANA
+    "LUNA1-USD", //TERRA LUNA
+    "AVAX-USD", //AVALANCE
+    "DOT-USD", //POLKADOT
+    "ATOM-USD", //COSMOS
+    "NEAR-USD", //NEAR PROTOCOL
+    "LINK-USD", //CHAINLINK
+    "FTT-USD", //FTX TOKEN
+    "MANA-USD", //DECENTRALAND MANA
+    "AXS-USD", //AXIE INFINITY
+    "SAND-USD", //SANDBOX
+    // "APE3-USD", //APE COIN /*not yet available*/
+    "XMR-USD", //MONERO
+    "WAVES-USD", //WAVES
+    "THETA-USD", //THETA
+    "FTM-USD", //FANTOM
+    "RUNE-USD", //THORCHAIN
+    "XTZ-USD", //TEZOS-USD
+    "ZEC-USD", //ZCASH
+    "CAKE-USD", //PANCAKE SWAP
+    "AAVE-USD", //AAVE
+    "KSM-USD", //KUSAMA
   ];
 
   let d = new Date();
@@ -17,6 +42,7 @@ import ExcelJS from "exceljs";
   workbook.creator = "LRL";
   workbook.lastModifiedBy = "LRL-bot";
   workbook.modified = new Date();
+  const timeout = 10000;
 
   for (let coin of coins) {
     const datas = await puppeteerMagic(coin);
@@ -128,7 +154,7 @@ import ExcelJS from "exceljs";
     console.log(coin, " : Exporting data to file COMPLETED.");
   }
   await workbook.xlsx.writeFile(filename);
-  await new Promise((r) => setTimeout(r, 2000));
+  await new Promise((r) => setTimeout(r, Number(timeout)));
 })();
 
 function return90DaysDate() {
