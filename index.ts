@@ -6,7 +6,7 @@ import ExcelJS from "exceljs";
 (async () => {
   const coins = [
     "BTC-USD", //bitcoin
-    // "ETH-USD", //ethereum
+    "ETH-USD", //ethereum
   ];
 
   let d = new Date();
@@ -128,6 +128,7 @@ import ExcelJS from "exceljs";
     console.log(coin, " : Exporting data to file COMPLETED.");
   }
   await workbook.xlsx.writeFile(filename);
+  await new Promise((r) => setTimeout(r, 2000));
 })();
 
 function return90DaysDate() {
@@ -153,7 +154,7 @@ async function puppeteerMagic(target: string): Promise<String[]> {
   });
   const page = await browser.newPage();
   await page.goto(
-    "https://finance.yahoo.com/quote/BTC-USD/history?p=" + target
+    `https://finance.yahoo.com/quote/${target}/history?p=${target}`
   );
   let closePrice =
     '//table[@data-test="historical-prices"]//tbody//tr[2]//td[5]//span';
